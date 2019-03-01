@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>PJS</title>
+		<style>
+			body {
+				background-color:silver;
+			}
+			canvas {
+				position:absolute;
+				left:0px;
+				top:0px;
+				outline:none;
+			}
+		</style>
+	</head>
+	<body>
+	    <script src="http://processingjs.org/js/processing.min.js"></script>
+		<script type="application/processing">
+			float x = 0;
+			float y = 3960;
+			float z = 0;
+			float rx = 0;
+			float ry = 0;
+			boolean jump = false;
+			float vel = 5;
+			var trees = [];
+			int loadTimer = 0;
+			boolean mLeft, mUp, mRight, mDown, pLeft, pUp, pRight, pDown;
+			angleMode = "radians";
+			void setup() {
+				size(1280, 856, OPENGL);
+			}
+			for(var i = 0; i<20; i++) {
+				trees.push([random(-1000, 1000), random(-1000, 1000)]);
+			}
+			void draw() {
+				background(100, 200, 255);
+				camera(0, 0, 0, 0, 0, 1, 0, -1, 0);
+				ambientLight(200, 200, 200);
+				directionalLight(130, 130, 130, 3, -5, 0);
+				noStroke();
+				pushMatrix();
+					rotateX(ry);
+					rotateY(rx);
+					translate(x, y, z);
+					for(var t in trees) {
+						tree(trees[t][0], trees[t][1]);
+					}
+					pushMatrix();
+						translate(0, 0, 0);
+						rotateZ(PI);
+						translate(0, 4050, 0);
+						rotateX(-1.5708);
+						fill(147, 207, 101);
+						rect(-1000, -1000, 2000, 2000);
+					popMatrix();
+				popMatrix();
+				if (jump) {
+					y-=vel;
+					vel-=0.2;
+					if (y > 3960) {
+						y = 3960;
+						vel = 5;
+						jump = false;
+						pLeft = false;
+						pUp = false;
+						pRight = false;
+						pDown = false;
+						mLeft = false;
+						mUp = false;
+						mRight = false;
+						mDown = false;
+					}
+				}
+				if (pLeft) {
+					rx+=0.015;
+				}
+				if (pUp) {
+					ry+=0.015;
+				}
+				if (pRight) {
+					rx-=0.015;
+				}
+				if (pDown) {
+					ry-=0.015;
+				}
+				if (mLeft) {
+					z+=sin(rx)*3;
+					x+=cos(rx)*3;
+				}
+				if (mUp) {
+					z-=cos(rx)*3;
+					x+=sin(rx)*3;
+				}
+				if (mRight) {
+					z-=sin(rx)*3;
+					x-=cos(rx)*3;
+				}
+				if (mDown) {
+					z+=cos(rx)*3;
+					x-=sin(rx)*3;
+				}
+			}
+			void tree(float tx, float tz) {
+				pushMatrix();
+					rotateZ(PI);
+					translate(tx, 4000, tz);
+					fill(145, 86, 27);
+					box(20, 100, 20);
+					translate(0, -70, 0);
+					fill(168, 201, 48);
+					sphere(50);
+				popMatrix();
+			}
+			void keyPressed() {
+				setMove(keyCode, true);
+			}
+			void keyReleased() {
+				if (!jump) {
+					setMove(keyCode, false);
+				}
+			}
+			boolean setMove(int k, boolean b) {
+				switch(k) {
+					case 37:
+						return pLeft = b;
+					case 38:
+						return pUp = b;
+					case 39:
+						return pRight = b;
+					case 40:
+						return pDown = b;
+					case 65:
+						return mLeft = b;
+					case 87:
+						return mUp = b;
+					case 68:
+						return mRight = b;
+					case 83:
+						return mDown = b;
+					case 32:
+						return jump = b;
+					default:
+						return b;
+				}
+			}
+		</script>
+		<canvas></canvas>
+	</body>
+</html>
